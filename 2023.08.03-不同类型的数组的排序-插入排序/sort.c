@@ -12,12 +12,13 @@ void insert(void* arr, int length, int size, int(*compare)(void*, void*))
 	int left = -1, right = length;
 	int middle;
 	int cmp;
-	char tmp = 0;
-	void* p0 = (char*)arr + length * size;
-	while(left < right - 1)
+	
+	char* px;
+	px = (char*)malloc(size);
+	while (left < right - 1)
 	{
 		middle = (left + right) / 2;
-		cmp = compare((void*)((char*)arr + middle * size), p0);
+		cmp = compare((void*)((char*)arr + middle * size), (void*)((char*)arr + length * size));
 		if (cmp < 0)
 			right = middle;
 		else if (cmp > 0)
@@ -29,16 +30,19 @@ void insert(void* arr, int length, int size, int(*compare)(void*, void*))
 			break;
 		}
 	}
+	for (j = 0; j < size; j++)
+		px[j] = *((char*)arr + length * size + j);
 	for (i = length; i >= 0; i--)
 	{
 		if (i > left + 1)
 			for (j = 0; j < size; j++)
-			{
-				tmp = *((char*)arr + i * size + j);
 				*((char*)arr + i * size + j) = *((char*)arr + (i - 1) * size + j);
-				*((char*)arr + (i - 1) * size + j) = tmp;
-			}
+		else if (i == left + 1)
+			for (j = 0; j < size; j++)
+				*((char*)arr + i * size + j) = px[j];
 	}
+	free(px);
+	px = NULL;
 }
 
 void insert_sort(void* arr, int length, int size, int(*compare)(void*, void*))
